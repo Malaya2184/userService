@@ -1,9 +1,6 @@
 package com.spider.userservice.controllers;
 
-import com.spider.userservice.dtos.LogOutRequestDto;
-import com.spider.userservice.dtos.LoginRequestDto;
-import com.spider.userservice.dtos.SignUpRequestDto;
-import com.spider.userservice.dtos.UserDto;
+import com.spider.userservice.dtos.*;
 import com.spider.userservice.models.Token;
 import com.spider.userservice.models.User;
 import com.spider.userservice.services.UserService;
@@ -34,8 +31,11 @@ public class UserController {
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
     @PostMapping("/login")
-    public ResponseEntity<Token> login(@RequestBody LoginRequestDto loginRequestDto){
-        return null;
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto){
+        Token token = userService.login(loginRequestDto.getEmail(),loginRequestDto.getPassword());
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setToken(token);
+        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/logout")

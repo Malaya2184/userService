@@ -1,5 +1,6 @@
 package com.spider.userservice.dtos;
 
+import com.spider.userservice.models.Token;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequestDto {
-    private String email;
-    private String password;
+public class LoginResponseDto {
+    private Token token;
 }
