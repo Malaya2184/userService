@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class User extends BaseModel{
-    private String Name;
+    private String name;
     private String email;
     private String hashedPassword;
     @ManyToMany

@@ -1,6 +1,7 @@
 package com.spider.userservice.dtos;
 
 import com.spider.userservice.models.Role;
+import com.spider.userservice.models.User;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,13 @@ public class UserDto {
     @ManyToMany
     private List<Role> roles;
     private boolean isEmailVerified;
+
+    public static UserDto from(User user){
+        UserDto userDto = new UserDto();
+        userDto.setName(user.getName());
+        userDto.setEmail(user.getEmail());
+        userDto.setRoles(user.getRoles());
+        userDto.setEmailVerified(user.isEmailVerified());
+        return userDto;
+    }
 }
