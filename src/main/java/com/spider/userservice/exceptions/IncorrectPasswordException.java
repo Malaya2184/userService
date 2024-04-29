@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InValidPasswordException extends RuntimeException{
-    public InValidPasswordException(String message){
+public class IncorrectPasswordException extends RuntimeException{
+    public IncorrectPasswordException(String message){
         super(message);
     }
 }

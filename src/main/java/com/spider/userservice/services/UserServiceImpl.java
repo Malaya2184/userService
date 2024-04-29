@@ -1,14 +1,17 @@
 package com.spider.userservice.services;
 
-import com.spider.userservice.exceptions.InValidPasswordException;
+import com.spider.userservice.exceptions.InvalidTokenException;
 import com.spider.userservice.models.Token;
 import com.spider.userservice.models.User;
 import com.spider.userservice.repositories.TokenRepository;
 import com.spider.userservice.repositories.UserRepository;
-import org.springframework.http.ResponseEntity;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -58,20 +61,55 @@ public class UserServiceImpl implements UserService{
         boolean matched = bCryptPasswordEncoder.matches(password, user.getHashedPassword());
 //        if matched the generate a token , to genrate token we need user object to create  a encoded payload
         if(!matched){
-            throw new InValidPasswordException("You have entered an invalid password");
+            return null;
         }
 //        if password matched then we need to generte a token
         Token token = generateToken(user);
         Token savedToken = tokenRepository.save(token);
 
-        return null;
+        return savedToken;
     }
     private Token generateToken(User user){
-        return null;
+
+        LocalDate currentTime = LocalDate.now();
+        LocalDate thirtyDayFromCurrentTime = currentTime.plusDays(30);
+
+//      converting local date to date - no need to remember
+        Date date = Date.from(thirtyDayFromCurrentTime.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+
+        Token token = new Token();
+//        Token value is 128 bit alphanumeric characters, Randomly generated
+//        Now we are using apache commons lang 3 library to generate
+        token.setValue(RandomStringUtils.randomAlphanumeric(128));
+        token.setExpiryAt(date);
+        token.setUser(user);
+        return token;
     }
 
     @Override
-    public Void logOut(Token Token) {
-        return null;
+    public Token logOut(String token) {
+        Optional<Token> optionalToken = tokenRepository.findByValueAndDeleted(token, false);
+        if(optionalToken.isEmpty()){
+            throw  new InvalidTokenException("This token is not valid or expired");
+        }
+        Token responseToken = optionalToken.get();
+        responseToken.setDeleted(true);
+        Token deletedToken = tokenRepository.save(responseToken);
+        return deletedToken;
     }
+//    for token validation, this should be used for other microservices
+    public User validateToken(String tokenValue){
+        Optional<Token> optionalToken = tokenRepository.findByValueAndDeleted(tokenValue, false);
+        if(optionalToken.isEmpty()){
+            throw new InvalidTokenException("Token is invalid or expired");
+        }
+        Optional<User> optionalUser = userRepository.findById(optionalToken.get().getUser().getId());
+        if (optionalUser.isEmpty()){
+//            throw new
+        }
+
+        return optionalUser.get();
+    }
+
 }
