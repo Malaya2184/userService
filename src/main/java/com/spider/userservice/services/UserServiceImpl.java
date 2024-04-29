@@ -1,6 +1,7 @@
 package com.spider.userservice.services;
 
 import com.spider.userservice.exceptions.InvalidTokenException;
+import com.spider.userservice.exceptions.UserNotFoundException;
 import com.spider.userservice.models.Token;
 import com.spider.userservice.models.User;
 import com.spider.userservice.repositories.TokenRepository;
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService{
         }
         Optional<User> optionalUser = userRepository.findById(optionalToken.get().getUser().getId());
         if (optionalUser.isEmpty()){
-//            throw new
+            throw new UserNotFoundException("User does not exist");
         }
 
         return optionalUser.get();
