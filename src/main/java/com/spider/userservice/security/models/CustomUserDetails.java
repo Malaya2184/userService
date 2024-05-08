@@ -17,6 +17,7 @@ import java.util.List;
 @JsonDeserialize
 @NoArgsConstructor
 public class CustomUserDetails implements UserDetails {
+    private Long userId;
     private String password;
     private String username;
     private boolean accountNonExpired;
@@ -26,6 +27,7 @@ public class CustomUserDetails implements UserDetails {
     private List<CustomGrantedAuthorities> authorities;
 
     public CustomUserDetails(User user) {
+        this.userId = user.getId();
         this.username = user.getEmail();
         this.password = user.getHashedPassword();
         this.accountNonExpired = true;
@@ -42,6 +44,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     @Override
