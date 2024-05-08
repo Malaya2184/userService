@@ -6,12 +6,13 @@ import com.spider.userservice.security.models.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 
-//creatd this class so that it can create a custom user details service for us
+//created this class so that it can create a custom user details service for us
+@Service
 public class CustomeUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
@@ -27,7 +28,7 @@ public class CustomeUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("user with user email/user name " + username + " not found");
         }
         User user = response.get();
-//        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        return null;
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        return customUserDetails;
     }
 }

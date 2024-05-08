@@ -2,7 +2,7 @@ CREATE TABLE `role`
 (
     id      BIGINT AUTO_INCREMENT NOT NULL,
     deleted BIT(1) NOT NULL,
-    value   VARCHAR(255) NULL,
+    name   VARCHAR(255) NULL,
     CONSTRAINT pk_role PRIMARY KEY (id)
 );
 
