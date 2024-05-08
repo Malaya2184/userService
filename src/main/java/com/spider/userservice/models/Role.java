@@ -12,5 +12,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class Role extends BaseModel{
-    private String value;
+    private String name;
 }
