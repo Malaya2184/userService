@@ -80,6 +80,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("*/signup").permitAll()
+//                        .requestMatchers("*/signin").permitAll()
                         .anyRequest().authenticated()
                 ).csrf().disable()
                 .cors().disable()

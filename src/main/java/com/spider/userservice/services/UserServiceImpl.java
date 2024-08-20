@@ -1,5 +1,9 @@
 package com.spider.userservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spider.userservice.configs.KafkaProducerClient;
+import com.spider.userservice.dtos.SendEmailDto;
 import com.spider.userservice.exceptions.InvalidTokenException;
 import com.spider.userservice.exceptions.UserNotFoundException;
 import com.spider.userservice.models.Token;
@@ -21,11 +25,15 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private TokenRepository tokenRepository;
+    private KafkaProducerClient kafkaProducerClient;
+    private ObjectMapper objectMapper;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, TokenRepository tokenRepository) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, TokenRepository tokenRepository, KafkaProducerClient kafkaProducerClient, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.tokenRepository = tokenRepository;
+        this.kafkaProducerClient = kafkaProducerClient;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -40,6 +48,20 @@ public class UserServiceImpl implements UserService{
         user.setName(name);
         user.setHashedPassword(bCryptPasswordEncoder.encode(password));
         User savedUser = userRepository.save(user);
+//        once the signup is complete send the event to kakfa to send an email
+        SendEmailDto sendEmailDto = new SendEmailDto();
+        sendEmailDto.setFrom("sendemailkafka@gmail.com");
+//        this from email password is set in the email service
+        sendEmailDto.setTo(email);
+        sendEmailDto.setSubject("Checking kafka service with email");
+        sendEmailDto.setBody("Thanks for using kakfa. Here the user service is the producer and emial service is  consumer");
+        try {
+            kafkaProducerClient.sendEvent("sendEmail", objectMapper.writeValueAsString(sendEmailDto));
+        } catch (JsonProcessingException e) {
+            System.out.println("somethigwent wrong during sending events to kafka");
+            throw new RuntimeException(e);
+        }
+
         return savedUser;
     }
 

@@ -1,5 +1,6 @@
 package com.spider.userservice.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.spider.userservice.dtos.*;
 import com.spider.userservice.exceptions.IncorrectPasswordException;
 import com.spider.userservice.exceptions.InvalidTokenException;
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequestDto signUpRequestDto){
+    public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequestDto signUpRequestDto) throws JsonProcessingException {
         User user = userService.signUp(
                 signUpRequestDto.getEmail(),
                 signUpRequestDto.getPassword(),
@@ -29,7 +30,7 @@ public class UserController {
         UserDto userDto = UserDto.from(user);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
-    @PostMapping("/login")
+    @PostMapping("/signin")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) throws IncorrectPasswordException {
         Token token = userService.login(loginRequestDto.getEmail(),loginRequestDto.getPassword());
         if (token == null){
